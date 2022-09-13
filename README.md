@@ -1,1 +1,1 @@
-# dinning-hall-service
+- docker-compose up --build --remove-orphans

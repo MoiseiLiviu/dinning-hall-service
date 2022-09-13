@@ -18,7 +18,6 @@ public class DinningHallController {
     @PostMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void receiveFinishedOrder(@RequestBody FinishedOrder finishedOrder){
-        log.info("Received "+finishedOrder.toString());
         waiterService.receiveFinishedOrder(finishedOrder);
     }
 }

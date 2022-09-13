@@ -38,7 +38,7 @@ public class Table {
         Double maxWaitTime = items.stream().mapToInt(MenuItem::getPreparationTime).max().orElse(0) * 1.3;
         List<Long> itemIds = items.stream().map(MenuItem::getId).collect(Collectors.toList());
         int priority = random.nextInt(4) + 1;
-        return new Order(itemIds, priority, maxWaitTime, Instant.EPOCH.toEpochMilli(), this.id);
+        return new Order(itemIds, priority, maxWaitTime, Instant.now().toEpochMilli(), this.id);
     }
 
     public void verifyIfOrderIsRight(FinishedOrder finishedOrder) {
