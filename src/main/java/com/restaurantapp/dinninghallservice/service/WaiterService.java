@@ -39,12 +39,15 @@ public class WaiterService {
     @Value("${kitchen.service.url}")
     private String kitchenServiceUrl;
 
-    public WaiterService() {
+    private final OrderRatingService orderRatingService;
+
+    public WaiterService(OrderRatingService orderRatingService) {
         initWaiters();
         tables = new ArrayList<>();
         for (int i = 0; i < NUMBER_OF_TABLES; i++) {
             tables.add(new Table());
         }
+        this.orderRatingService = orderRatingService;
     }
 
     private void initWaiters() {
@@ -94,7 +97,8 @@ public class WaiterService {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            log.error(e.getMessage());
+            Thread.currentThread().interrupt();
         }
         Order order = table.generateOrder();
         order.setWaiterId(waiterId);
@@ -117,6 +121,7 @@ public class WaiterService {
 
         Table table = getTableById(finishedOrder.getTableId());
         table.verifyIfOrderIsRight(finishedOrder);
+        orderRatingService.rateOrderBasedOnThePreparationTime(finishedOrder);
         table.setState(TableState.FREE);
     }
 
