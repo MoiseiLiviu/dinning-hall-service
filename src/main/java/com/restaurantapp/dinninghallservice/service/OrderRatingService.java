@@ -1,25 +1,25 @@
 package com.restaurantapp.dinninghallservice.service;
 
 import com.restaurantapp.dinninghallservice.model.FinishedOrder;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.concurrent.atomic.AtomicLong;
 
-@Service
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrderRatingService {
 
-    private AtomicLong totalRating = new AtomicLong();
-    private AtomicLong numberOfOrdersServed = new AtomicLong();
+    private static final AtomicLong totalRating = new AtomicLong();
+    private static final AtomicLong numberOfOrdersServed = new AtomicLong();
 
-    public void rateOrderBasedOnThePreparationTime(FinishedOrder finishedOrder){
+    public static void rateOrderBasedOnThePreparationTime(FinishedOrder finishedOrder){
 
         int rating;
-        long prepTime = Instant.now().toEpochMilli() - finishedOrder.getPickUpTime();
-        double maxWaitTime = finishedOrder.getMaximumWaitTime() * 1000;
-        if(Instant.now().toEpochMilli() - finishedOrder.getPickUpTime() < finishedOrder.getMaximumWaitTime()){
+        long prepTime = finishedOrder.getServingTime().toEpochMilli() - finishedOrder.getPickUpTime();
+        double maxWaitTime = finishedOrder.getMaximumWaitTime() * 50L;
+        if(prepTime < maxWaitTime){
          rating = 5;
         } else if (prepTime < maxWaitTime * 1.1){
             rating = 4;
