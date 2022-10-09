@@ -1,10 +1,12 @@
 package com.restaurantapp.dinninghallservice.model;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,4 +39,7 @@ public class FinishedOrder {
 
     @JsonAlias("cooking_details")
     private List<CookingDetails> cookingDetails;
+
+    @JsonIgnore
+    private Instant servingTime;
 }
