@@ -14,6 +14,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static com.restaurantapp.dinninghallservice.constants.enums.KitchenUrls.KITCHEN_SERVICE_URL;
+
 @Slf4j
 public class Waiter {
 
@@ -23,7 +25,6 @@ public class Waiter {
     private final ExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private static final RestTemplate restTemplate = new RestTemplate();
 
-    private static final String KITCHEN_SERVICE_URL = "http://localhost:8081/kitchen/order";
 
     public Waiter() {
         this.id = idCounter.incrementAndGet();
@@ -53,7 +54,7 @@ public class Waiter {
         this.executorService.submit(() -> {
             Table table = WaiterService.getTableById(finishedOrder.getTableId());
             table.verifyIfOrderIsRight(finishedOrder);
-            OrderRatingService.rateOrderBasedOnThePreparationTime(finishedOrder);
+            OrderRatingService.getInstance().rateOrderBasedOnThePreparationTime(finishedOrder);
             table.setCurrentState(TableState.FREE);
             table.submitOrder();
             WaiterService.freeWaiters.add(this);

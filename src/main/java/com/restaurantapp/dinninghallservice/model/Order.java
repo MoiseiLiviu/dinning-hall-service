@@ -35,7 +35,7 @@ public class Order {
     @JsonAlias("table_id")
     private Long tableId;
 
-    private static AtomicLong idCounter = new AtomicLong();
+    public static final AtomicLong idCounter = new AtomicLong();
 
     public Order(List<Long> items, Integer priority, Double maximumWaitTime, Long pickUpTime, Long tableId) {
         this.orderId = idCounter.incrementAndGet();
@@ -44,5 +44,10 @@ public class Order {
         this.maximumWaitTime = maximumWaitTime;
         this.pickUpTime = pickUpTime;
         this.tableId = tableId;
+    }
+
+    public Order(List<Long> items){
+        this.orderId = idCounter.incrementAndGet();
+        this.items = items;
     }
 }

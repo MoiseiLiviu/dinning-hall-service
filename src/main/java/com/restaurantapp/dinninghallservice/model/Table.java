@@ -33,7 +33,7 @@ public class Table {
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     private static AtomicLong idCounter = new AtomicLong();
-    private static final List<MenuItem> menuItems = initMenuItems();
+    public static final List<MenuItem> menuItems = initMenuItems();
 
     public Table() {
         this.tableId = idCounter.incrementAndGet();
