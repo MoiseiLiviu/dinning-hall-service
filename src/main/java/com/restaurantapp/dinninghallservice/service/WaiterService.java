@@ -22,9 +22,12 @@ public class WaiterService {
     private static final Integer NUMBER_OF_TABLES = 10;
     private static final Integer NUMBER_OF_WAITERS = 4;
 
-    public WaiterService() {
+    private final ExternalOrderService externalOrderService;
+
+    public WaiterService(ExternalOrderService externalOrderService) {
         initWaiters();
         initTables();
+        this.externalOrderService = externalOrderService;
     }
 
     private void initWaiters() {
@@ -44,15 +47,19 @@ public class WaiterService {
     }
 
     public void receiveFinishedOrder(FinishedOrder finishedOrder) {
-        Waiter waiter = getWaiterById(finishedOrder.getWaiterId());
-        waiter.markOrderAsFinished(finishedOrder);
+        if (finishedOrder.getWaiterId() == null) {
+            externalOrderService.receiveExternalOrder(finishedOrder);
+        } else {
+            Waiter waiter = getWaiterById(finishedOrder.getWaiterId());
+            waiter.markOrderAsFinished(finishedOrder);
+        }
     }
 
     public static Table getTableById(Long tableId) {
         return tables.stream().filter(t -> t.getTableId().equals(tableId)).findAny().orElseThrow();
     }
 
-    public static Waiter getWaiterById(Long waiterId){
+    public static Waiter getWaiterById(Long waiterId) {
         return waiters.stream().filter(w -> w.getId().equals(waiterId)).findAny().orElseThrow();
     }
 }
