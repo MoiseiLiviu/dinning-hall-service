@@ -14,7 +14,7 @@
     <name>dinning-hall-service</name>
     <description>Dinning Hall Service</description>
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
         <springdoc-version>1.6.4</springdoc-version>
     </properties>

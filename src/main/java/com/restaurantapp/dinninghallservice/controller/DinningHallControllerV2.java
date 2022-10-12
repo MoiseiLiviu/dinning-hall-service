@@ -25,6 +25,6 @@ public class DinningHallControllerV2 {
 
     @PostMapping("/rating")
     public SubOrderRatingResponse submitRating(@RequestBody SubOrderRatingRequest subOrderRatingRequest ){
-        return OrderRatingService.getInstance().submitExternalRating(subOrderRatingRequest);
+        return OrderRatingService.submitExternalRating(subOrderRatingRequest);
     }
 }

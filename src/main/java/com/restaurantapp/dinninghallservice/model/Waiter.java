@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static com.restaurantapp.dinninghallservice.DinningHallServiceApplication.TIME_UNIT;
 import static com.restaurantapp.dinninghallservice.constants.enums.KitchenUrls.KITCHEN_SERVICE_URL;
 
 @Slf4j
@@ -32,20 +33,10 @@ public class Waiter {
 
     public void takeOrder(Order order) {
         this.executorService.submit(() -> {
-            try {
-                Thread.sleep(2 * 50L);
-            } catch (InterruptedException e) {
-                log.error(e.getMessage());
-                Thread.currentThread().interrupt();
-            }
             order.setPickUpTime(Instant.now().toEpochMilli());
             order.setWaiterId(this.id);
-            ResponseEntity<Void> kitchenResponse = restTemplate.postForEntity(KITCHEN_SERVICE_URL, order, Void.class);
-            if (kitchenResponse.getStatusCode().equals(HttpStatus.ACCEPTED)) {
-                log.info(String.format("Order %s was sent successfully by waiter with id %d", order, id));
-            } else {
-                log.warn(String.format("Order %s couldn't be sent by waiter with id %d", order, id));
-            }
+           restTemplate.postForEntity(KITCHEN_SERVICE_URL, order, Void.class);
+           log.info(String.format("Order %s was sent successfully by waiter with id %d", order, id));
             WaiterService.freeWaiters.add(this);
         });
     }
@@ -54,7 +45,7 @@ public class Waiter {
         this.executorService.submit(() -> {
             Table table = WaiterService.getTableById(finishedOrder.getTableId());
             table.verifyIfOrderIsRight(finishedOrder);
-            OrderRatingService.getInstance().rateOrderBasedOnThePreparationTime(finishedOrder);
+            OrderRatingService.rateOrderBasedOnThePreparationTime(finishedOrder);
             table.setCurrentState(TableState.FREE);
             table.submitOrder();
             WaiterService.freeWaiters.add(this);
