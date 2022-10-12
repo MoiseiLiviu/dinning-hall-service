@@ -19,8 +19,8 @@ public class WaiterService {
 
     public static final BlockingQueue<Waiter> freeWaiters = new LinkedBlockingQueue<>();
 
-    private static final Integer NUMBER_OF_TABLES = 10;
-    private static final Integer NUMBER_OF_WAITERS = 4;
+    private static final Integer NUMBER_OF_TABLES = 6;
+    private static final Integer NUMBER_OF_WAITERS = 3;
 
     private final ExternalOrderService externalOrderService;
 

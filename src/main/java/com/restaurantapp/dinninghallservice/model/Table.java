@@ -20,6 +20,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.restaurantapp.dinninghallservice.DinningHallServiceApplication.TIME_UNIT;
+
+
 @Getter
 @Setter
 @Slf4j
@@ -43,6 +46,7 @@ public class Table {
 
         executorService.submit(()->{
             try {
+                Thread.sleep(4 * TIME_UNIT);
                 this.currentState = TableState.WAITING_TO_MAKE_AN_ORDER;
                 Order order = generateOrder();
                 this.setLastOrder(order);
@@ -55,14 +59,14 @@ public class Table {
     }
 
     public Order generateOrder() {
-        int numberOfMenuItems = random.nextInt(2) + 1;
+        int numberOfMenuItems = random.nextInt(4) + 1;
         List<MenuItem> items = Stream
                 .generate(() -> menuItems.get(random.nextInt(menuItems.size() - 1)))
                 .limit(numberOfMenuItems)
                 .collect(Collectors.toList());
         Double maxWaitTime = items.stream().mapToInt(MenuItem::getPreparationTime).max().orElse(0) * 1.3;
         List<Long> itemIds = items.stream().map(MenuItem::getId).collect(Collectors.toList());
-        int priority = random.nextInt(4) + 1;
+        int priority = random.nextInt(2) + 1;
         return new Order(itemIds, priority, maxWaitTime, Instant.now().toEpochMilli(), this.tableId);
     }
 
