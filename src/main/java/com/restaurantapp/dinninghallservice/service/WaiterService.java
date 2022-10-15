@@ -1,11 +1,15 @@
 package com.restaurantapp.dinninghallservice.service;
 
-import com.restaurantapp.dinninghallservice.model.*;
+import com.restaurantapp.dinninghallservice.model.FinishedOrder;
+import com.restaurantapp.dinninghallservice.model.Table;
+import com.restaurantapp.dinninghallservice.model.Waiter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -19,10 +23,17 @@ public class WaiterService {
 
     public static final BlockingQueue<Waiter> freeWaiters = new LinkedBlockingQueue<>();
 
-    private static final Integer NUMBER_OF_TABLES = 10;
-    private static final Integer NUMBER_OF_WAITERS = 4;
+    private static final Integer NUMBER_OF_TABLES = 6;
+    private static final Integer NUMBER_OF_WAITERS = 3;
 
     private final ExternalOrderService externalOrderService;
+
+    public static String KITCHEN_SERVICE_URL;
+
+    @Value("${kitchen.service.url}")
+    private void setKitchenServiceUrl(String value){
+        KITCHEN_SERVICE_URL=value;
+    };
 
     public WaiterService(ExternalOrderService externalOrderService) {
         initWaiters();

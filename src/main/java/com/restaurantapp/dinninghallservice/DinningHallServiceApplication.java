@@ -13,7 +13,6 @@ public class DinningHallServiceApplication {
 	public static final Long TIME_UNIT = 50L;
 
 	public static void main(String[] args) {
-		log.info("Starting the app");
 		SpringApplication.run(DinningHallServiceApplication.class, args);
 	}
 }
