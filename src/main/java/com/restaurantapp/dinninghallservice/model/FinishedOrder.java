@@ -42,4 +42,5 @@ public class FinishedOrder {
 
     @JsonIgnore
     private Instant servingTime;
+
 }
