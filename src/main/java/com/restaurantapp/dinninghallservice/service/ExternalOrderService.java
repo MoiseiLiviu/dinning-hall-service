@@ -1,5 +1,7 @@
 package com.restaurantapp.dinninghallservice.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.restaurantapp.dinninghallservice.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,8 +12,11 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -19,6 +24,8 @@ import java.util.Map;
 public class ExternalOrderService {
 
     private static final Map<Long, FinishedOrderExternal> finishedOrders = new HashMap<>();
+
+    public static List<MenuItem> menuItems;
 
     private static final RestTemplate restTemplate = new RestTemplate();
 
@@ -41,14 +48,29 @@ public class ExternalOrderService {
     @Value("${kitchen.service.url}")
     private String kitchenServiceUrl;
 
+    @Value("${restaurant.menu}")
+    public String restaurantMenu;
+
+    @PostConstruct
+    public void initMenuItems() {
+        ObjectMapper mapper = new ObjectMapper();
+        InputStream is = WaiterService.class.getResourceAsStream("/"+restaurantMenu);
+        try {
+            menuItems =  mapper.readValue(is, new TypeReference<List<MenuItem>>() {
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @PostConstruct
     public void registerRestaurant(){
         if(foodOrderServiceUrl != null) {
             Restaurant restaurant = new Restaurant();
             restaurant.setRestaurantId(restaurantId);
             restaurant.setAddress(restaurantAdress);
-            restaurant.setMenu(Table.menuItems);
-            restaurant.setMenuItems(Table.menuItems.size());
+            restaurant.setMenu(menuItems);
+            restaurant.setMenuItems(menuItems.size());
             restaurant.setRating(OrderRatingService.avg);
             restaurant.setName(restaurantName);
             restTemplate.postForEntity(foodOrderServiceUrl + FOOD_SERVICE_REGISTRATION_URL, restaurant, Void.class);
@@ -56,16 +78,16 @@ public class ExternalOrderService {
     }
 
     public FinishedOrderExternal checkIfOrderIsReady(Long id) {
-        log.info("Requesting status for finished order with id : "+id);
+//        log.info("Requesting status for finished order with id : "+id);
         FinishedOrderExternal finishedOrderExternal = finishedOrders.get(id);
         if (finishedOrderExternal.getIsReady()) {
-            log.info("Removing finished order with id : "+id);
+//            log.info("Removing finished order with id : "+id);
             finishedOrders.remove(id);
         } else {
             finishedOrderExternal.setEstimatedWaitingTime(getEstimatedCookingTimeFromKitchen(id));
         }
 
-        log.info("Returning order status : "+finishedOrderExternal);
+//        log.info("Returning order status : "+finishedOrderExternal);
         return finishedOrderExternal;
     }
 
@@ -112,7 +134,7 @@ public class ExternalOrderService {
         subOrderResponse.setRegisteredTime(registeredTime);
         subOrderResponse.setCreatedTime(subOrderRequest.getCreatedTime());
 
-        log.info("Suborder response : "+subOrderResponse+ " for order : "+order+" finishedOrdersMap : "+finishedOrders);
+//        log.info("Suborder response : "+subOrderResponse+ " for order : "+order+" finishedOrdersMap : "+finishedOrders);
 
         return subOrderResponse;
     }

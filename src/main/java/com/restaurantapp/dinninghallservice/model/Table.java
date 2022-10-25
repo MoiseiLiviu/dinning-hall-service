@@ -3,6 +3,7 @@ package com.restaurantapp.dinninghallservice.model;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.restaurantapp.dinninghallservice.constants.enums.TableState;
+import com.restaurantapp.dinninghallservice.service.ExternalOrderService;
 import com.restaurantapp.dinninghallservice.service.WaiterService;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,7 +37,6 @@ public class Table {
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     private static AtomicLong idCounter = new AtomicLong();
-    public static final List<MenuItem> menuItems = initMenuItems();
 
     public Table() {
         this.tableId = idCounter.incrementAndGet();
@@ -63,7 +63,7 @@ public class Table {
     public Order generateOrder() {
         int numberOfMenuItems = random.nextInt(4) + 1;
         List<MenuItem> items = Stream
-                .generate(() -> menuItems.get(random.nextInt(menuItems.size() - 1)))
+                .generate(() -> ExternalOrderService.menuItems.get(random.nextInt(ExternalOrderService.menuItems.size() - 1)))
                 .limit(numberOfMenuItems)
                 .collect(Collectors.toList());
         Double maxWaitTime = items.stream().mapToInt(MenuItem::getPreparationTime).max().orElse(0) * 1.3;
@@ -77,17 +77,6 @@ public class Table {
         if (!(Objects.equals(finishedOrder.getOrderId(), lastOrder.getOrderId())
                 && finishedOrder.getItems().equals(lastOrder.getItems()))) {
             throw new RuntimeException("Table did not expect this order!");
-        }
-    }
-
-    private static List<MenuItem> initMenuItems() {
-        ObjectMapper mapper = new ObjectMapper();
-        InputStream is = WaiterService.class.getResourceAsStream("/menu-items1.json");
-        try {
-            return mapper.readValue(is, new TypeReference<List<MenuItem>>() {
-            });
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 

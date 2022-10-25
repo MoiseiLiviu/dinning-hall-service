@@ -28,7 +28,6 @@ public class WaiterService {
     private static final List<Waiter> waiters = new ArrayList<>();
 
     public static final BlockingQueue<Waiter> freeWaiters = new LinkedBlockingQueue<>();
-    public static List<MenuItem> menuItems;
 
     private static final Integer NUMBER_OF_TABLES = 6;
     private static final Integer NUMBER_OF_WAITERS = 3;
@@ -53,19 +52,8 @@ public class WaiterService {
     @PostConstruct
     public void readMenu(){
         initTables();
-        this.externalOrderService = externalOrderService;
     }
 
-    private void initMenuItems() {
-        ObjectMapper mapper = new ObjectMapper();
-        InputStream is = WaiterService.class.getResourceAsStream("/"+restaurantMenu);
-        try {
-            menuItems =  mapper.readValue(is, new TypeReference<List<MenuItem>>() {
-            });
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     private void initWaiters() {
         for (int i = 0; i < NUMBER_OF_WAITERS; i++) {
@@ -76,7 +64,6 @@ public class WaiterService {
     }
 
     private void initTables() {
-        initMenuItems();
         for (int i = 0; i < NUMBER_OF_TABLES; i++) {
             Table table = new Table();
             tables.add(table);
