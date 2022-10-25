@@ -1,6 +1,9 @@
 package com.restaurantapp.dinninghallservice.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.restaurantapp.dinninghallservice.model.FinishedOrder;
+import com.restaurantapp.dinninghallservice.model.MenuItem;
 import com.restaurantapp.dinninghallservice.model.Table;
 import com.restaurantapp.dinninghallservice.model.Waiter;
 import lombok.Getter;
@@ -8,6 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -22,6 +28,7 @@ public class WaiterService {
     private static final List<Waiter> waiters = new ArrayList<>();
 
     public static final BlockingQueue<Waiter> freeWaiters = new LinkedBlockingQueue<>();
+    public static List<MenuItem> menuItems;
 
     private static final Integer NUMBER_OF_TABLES = 6;
     private static final Integer NUMBER_OF_WAITERS = 3;
@@ -35,10 +42,28 @@ public class WaiterService {
         KITCHEN_SERVICE_URL=value;
     };
 
+    @Value("${restaurant.menu}")
+    public String restaurantMenu;
+
     public WaiterService(ExternalOrderService externalOrderService) {
         initWaiters();
-        initTables();
         this.externalOrderService = externalOrderService;
+    }
+
+    @PostConstruct
+    public void readMenu(){
+        initTables();
+    }
+
+    private void initMenuItems() {
+        ObjectMapper mapper = new ObjectMapper();
+        InputStream is = WaiterService.class.getResourceAsStream("/"+restaurantMenu);
+        try {
+            menuItems =  mapper.readValue(is, new TypeReference<List<MenuItem>>() {
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void initWaiters() {
@@ -50,6 +75,7 @@ public class WaiterService {
     }
 
     private void initTables() {
+        initMenuItems();
         for (int i = 0; i < NUMBER_OF_TABLES; i++) {
             Table table = new Table();
             tables.add(table);

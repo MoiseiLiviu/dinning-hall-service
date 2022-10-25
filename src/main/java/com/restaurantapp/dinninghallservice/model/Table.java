@@ -81,7 +81,7 @@ public class Table {
 
     private static List<MenuItem> initMenuItems() {
         ObjectMapper mapper = new ObjectMapper();
-        InputStream is = WaiterService.class.getResourceAsStream("/menu-items.json");
+        InputStream is = WaiterService.class.getResourceAsStream("/menu-items1.json");
         try {
             return mapper.readValue(is, new TypeReference<List<MenuItem>>() {
             });
