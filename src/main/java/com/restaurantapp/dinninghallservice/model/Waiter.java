@@ -5,17 +5,13 @@ import com.restaurantapp.dinninghallservice.constants.enums.TableState;
 import com.restaurantapp.dinninghallservice.service.OrderRatingService;
 import com.restaurantapp.dinninghallservice.service.WaiterService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
-
-import static com.restaurantapp.dinninghallservice.DinningHallServiceApplication.TIME_UNIT;
-import static com.restaurantapp.dinninghallservice.constants.enums.KitchenUrls.KITCHEN_SERVICE_URL;
 
 @Slf4j
 public class Waiter {
@@ -25,8 +21,7 @@ public class Waiter {
 
     private final ExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private static final RestTemplate restTemplate = new RestTemplate();
-
-
+  
     public Waiter() {
         this.id = idCounter.incrementAndGet();
     }
@@ -35,7 +30,8 @@ public class Waiter {
         this.executorService.submit(() -> {
             order.setPickUpTime(Instant.now().toEpochMilli());
             order.setWaiterId(this.id);
-           restTemplate.postForEntity(KITCHEN_SERVICE_URL, order, Void.class);
+           restTemplate.postForEntity(WaiterService.KITCHEN_SERVICE_URL + "/order", order, Void.class);
+
            log.info(String.format("Order %s was sent successfully by waiter with id %d", order, id));
             WaiterService.freeWaiters.add(this);
         });

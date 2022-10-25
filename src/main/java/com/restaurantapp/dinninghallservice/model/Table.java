@@ -47,6 +47,8 @@ public class Table {
         executorService.submit(()->{
             try {
                 Thread.sleep(4 * TIME_UNIT);
+//                log.info("Sending order");
+
                 this.currentState = TableState.WAITING_TO_MAKE_AN_ORDER;
                 Order order = generateOrder();
                 this.setLastOrder(order);
@@ -80,7 +82,7 @@ public class Table {
 
     private static List<MenuItem> initMenuItems() {
         ObjectMapper mapper = new ObjectMapper();
-        InputStream is = WaiterService.class.getResourceAsStream("/menu-items.json");
+        InputStream is = WaiterService.class.getResourceAsStream("/menu-items1.json");
         try {
             return mapper.readValue(is, new TypeReference<List<MenuItem>>() {
             });
