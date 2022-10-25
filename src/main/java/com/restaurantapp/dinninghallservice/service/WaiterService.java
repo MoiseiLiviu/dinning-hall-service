@@ -53,6 +53,7 @@ public class WaiterService {
     @PostConstruct
     public void readMenu(){
         initTables();
+        this.externalOrderService = externalOrderService;
     }
 
     private void initMenuItems() {

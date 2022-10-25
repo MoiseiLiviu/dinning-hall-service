@@ -13,7 +13,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 
-
 @Slf4j
 public class Waiter {
 
@@ -22,7 +21,7 @@ public class Waiter {
 
     private final ExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private static final RestTemplate restTemplate = new RestTemplate();
-
+  
     public Waiter() {
         this.id = idCounter.incrementAndGet();
     }
@@ -32,6 +31,7 @@ public class Waiter {
             order.setPickUpTime(Instant.now().toEpochMilli());
             order.setWaiterId(this.id);
            restTemplate.postForEntity(WaiterService.KITCHEN_SERVICE_URL + "/order", order, Void.class);
+
            log.info(String.format("Order %s was sent successfully by waiter with id %d", order, id));
             WaiterService.freeWaiters.add(this);
         });

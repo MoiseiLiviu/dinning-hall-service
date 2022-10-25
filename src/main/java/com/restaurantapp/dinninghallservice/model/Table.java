@@ -48,6 +48,7 @@ public class Table {
             try {
                 Thread.sleep(4 * TIME_UNIT);
 //                log.info("Sending order");
+
                 this.currentState = TableState.WAITING_TO_MAKE_AN_ORDER;
                 Order order = generateOrder();
                 this.setLastOrder(order);

@@ -3,15 +3,16 @@ package com.restaurantapp.dinninghallservice.service;
 import com.restaurantapp.dinninghallservice.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-
 
 @Service
 @Slf4j
@@ -74,6 +75,7 @@ public class ExternalOrderService {
         finishedOrderExternal.setOrderId(finishedOrder.getOrderId());
         finishedOrders.putIfAbsent(finishedOrder.getOrderId(), finishedOrderExternal);
         finishedOrderExternal = finishedOrders.get(finishedOrder.getOrderId());
+
         finishedOrderExternal.setCookingTime(finishedOrder.getCookingTime());
         finishedOrderExternal.setPreparedTime(Instant.now().toEpochMilli());
         finishedOrderExternal.setCookingDetails(finishedOrder.getCookingDetails());
@@ -99,9 +101,11 @@ public class ExternalOrderService {
 
         ResponseEntity<Double> estimatedPrepTime = restTemplate.postForEntity(kitchenServiceUrl + "/order", order, Double.class);
 
+
         finishedOrderExternal.setEstimatedWaitingTime(estimatedPrepTime.getBody());
 
         SubOrderResponse subOrderResponse = new SubOrderResponse();
+
         subOrderResponse.setOrderId(order.getOrderId());
         subOrderResponse.setEstimatedWaitingTime(estimatedPrepTime.getBody());
         subOrderResponse.setRestaurantId(subOrderRequest.getRestaurantId());
@@ -115,7 +119,6 @@ public class ExternalOrderService {
 
     private Double getEstimatedCookingTimeFromKitchen(Long orderId) {
         ResponseEntity<Double> response = restTemplate.getForEntity(kitchenServiceUrl + CHECK_ORDER_URL + orderId, Double.class);
-
         return response.getBody();
     }
 }
